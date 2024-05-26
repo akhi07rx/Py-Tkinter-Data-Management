@@ -20,6 +20,38 @@ def load_data():
     list_values = list(sheet.values)
     print(list_values)
 
+    for col_name in list_values[0]:
+        tree_view.heading(col_name, text=col_name)
+
+    for value_tuple in list_values[1:]:
+        tree_view.insert('', tk.END, values=value_tuple)
+
+
+def insert_row():
+    name = name_entry.get()
+    age = int(age_spinbox.get())
+    subscription_status = status_combobox.get()
+    employment_status = "EMPLOYED" if cv.get() else "UNEMPLOYED"
+
+    print("ADDED TO DB\n", name, age, subscription_status, employment_status)
+
+    path = "C://Users//AKHI//Desktop//PY TEST//Tkinter Data//assets//xlxs//people.xlsx"
+    workbook = openpyxl.load_workbook(path)
+    sheet = workbook.active
+
+    row_values = [name, age, subscription_status, employment_status]
+    sheet.append(row_values)
+    workbook.save(path)
+
+    tree_view.insert('', tk.END, values=row_values)
+
+    name_entry.delete(0, 'end')
+    name_entry.insert(0, "Name")
+    age_spinbox.delete(0, 'end')
+    age_spinbox.insert(0, "Age")
+    status_combobox.set(combo_list[0])
+    cv.set(False)
+
 
 app = tk.Tk()
 app.title("TEST")
@@ -56,7 +88,7 @@ cv = tk.BooleanVar()
 check_button = ttk.Checkbutton(widgets_frame, text="EMPLOYED", variable=cv)
 check_button.grid(row=3, column=0, sticky="nsew", padx=5, pady=5)
 
-button = ttk.Button(widgets_frame, text="INSERT")
+button = ttk.Button(widgets_frame, text="INSERT", command=insert_row)
 button.grid(row=4, column=0, sticky="nsew", padx=5, pady=5)
 
 
@@ -73,13 +105,13 @@ tree_frame.grid(row=0, column=1, pady=10)
 tree_scroll = ttk.Scrollbar(tree_frame)
 tree_scroll.pack(side="right", fill="y")
 
-cols = ["NAME", "AGE", "SUBSCRIPTION", "EMPLOYMENT"]
+cols = ["NAME", "AGE", "SUBSCRIBED", "EMPLOYMENT"]
 tree_view = ttk.Treeview(tree_frame, show="headings",
                          yscrollcommand=tree_scroll.set, columns=cols, height=13)
 tree_view.pack()
 tree_view.column("NAME", width=100)
 tree_view.column("AGE", width=50)
-tree_view.column("SUBSCRIPTION", width=100)
+tree_view.column("SUBSCRIBED", width=100)
 tree_view.column("EMPLOYMENT", width=100)
 tree_view.pack()
 tree_scroll.config(command=tree_view.yview)
